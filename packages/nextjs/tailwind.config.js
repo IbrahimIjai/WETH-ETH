@@ -77,6 +77,7 @@ module.exports = {
     extend: {
       boxShadow: {
         center: "0 0 12px -2px rgb(0 0 0 / 0.05)",
+        custom: "0 0 4px rgba(0, 0, 0, .1), 0 1px 2px rgba(0, 0, 0, .25)",
       },
       animation: {
         "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
