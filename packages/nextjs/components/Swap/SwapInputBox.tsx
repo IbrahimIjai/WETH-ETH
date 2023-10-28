@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { InputBase } from "../scaffold-eth";
 import { useAccount } from "wagmi";
@@ -8,15 +8,16 @@ import { useAccountBalance, useScaffoldContractRead } from "~~/hooks/scaffold-et
 interface Props {
   isTop: boolean;
   token: "Wrapped Ether" | "Ether";
+  value: string;
+  setValue: (value: string) => void;
 }
 // 0 0 4px rgba(0, 0, 0, .1), 0 1px 2px rgba(0, 0, 0, .25); --boxShadow
 // order radius 16px
 const SwapInputBox: React.FC<Props> = props => {
   const { address } = useAccount();
-  const [value, setValue] = useState("");
   const isMounted = useIsMounted();
   const account = isMounted && address ? address : "";
-  const { isTop, token } = props;
+  const { isTop, token, value, setValue } = props;
   const ticker = token === "Ether" ? "ETH" : "WETH";
   const icon = token === "Ether" ? ETHIcon : WETHIcon;
 
@@ -26,7 +27,7 @@ const SwapInputBox: React.FC<Props> = props => {
       style={{ background: isTop ? "#000" : "" }}
     >
       <p className="text-[13px] font-[485] text-[#9b9b9b]">{token}</p>
-      <div className="my-2 w-full flex">
+      <div className="my-2 w-full flex gap-4">
         <div className="flex items-center justify-center gap-1">
           <Image src={icon} width={24} height={24} alt={`${ticker} Icon`} style={{ height: "24px", width: "24px" }} />
           <span>{ticker}</span>
@@ -36,6 +37,7 @@ const SwapInputBox: React.FC<Props> = props => {
           value={value}
           onChange={value => setValue(value)}
           error={Boolean(value) && !NUMBER_REGEX.test(value)}
+          disabled={!isTop}
         />
       </div>
       <p className="text-[13px] font-[485] text-[#9b9b9b]">
