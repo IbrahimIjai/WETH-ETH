@@ -1,11 +1,27 @@
 import { useState } from "react";
 import Arrow from "../assets/Arrow";
 import GasStation from "../assets/GasStation";
+import SwapButton from "./SwapButton";
+import SwapFee from "./SwapFee";
 import SwapInputBox from "./SwapInputBox";
+import { parseEther } from "viem";
+import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+
+export const NUMBER_REGEX = /^\.?\d+\.?\d*$/;
 
 const Swap = () => {
   const [action, setAction] = useState<"Wrap" | "Unwrap">("Wrap");
   const [value, setValue] = useState("");
+  const { writeAsync: depositETH, isLoading } = useScaffoldContractWrite({
+    contractName: "WETH9",
+    functionName: "deposit",
+    value: NUMBER_REGEX.test(value) ? parseEther(value) : undefined,
+  });
+  const { writeAsync: withdrawETH, isLoading: isLoadingWeth } = useScaffoldContractWrite({
+    contractName: "WETH9",
+    functionName: "withdraw",
+    args: [NUMBER_REGEX.test(value) ? parseEther(value) : undefined],
+  });
 
   return (
     <section className="rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-2 w-[480px] max-w-full">
@@ -29,9 +45,14 @@ const Swap = () => {
         setValue={setValue}
       />
       <div className="flex justify-end items-center gap-1 my-2">
-        <GasStation /> <span className="text-[12px] font-[485] text-[#9b9b9b]">~$0.00</span>
+        <GasStation /> <SwapFee />
       </div>
-      <div className="w-full py-2 bg-blue-950 text-center rounded-lg cursor-pointer">Swap</div>
+      <SwapButton
+        action={action}
+        value={value}
+        swap={action === "Wrap" ? depositETH : withdrawETH}
+        isLoading={action === "Wrap" ? isLoading : isLoadingWeth}
+      />
     </section>
   );
 };

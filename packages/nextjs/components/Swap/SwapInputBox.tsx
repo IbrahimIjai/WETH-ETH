@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { NUMBER_REGEX } from ".";
 import { InputBase } from "../scaffold-eth";
 import { useAccount } from "wagmi";
 import useIsMounted from "~~/hooks/isMounted";
@@ -11,8 +12,7 @@ interface Props {
   value: string;
   setValue: (value: string) => void;
 }
-// 0 0 4px rgba(0, 0, 0, .1), 0 1px 2px rgba(0, 0, 0, .25); --boxShadow
-// order radius 16px
+
 const SwapInputBox: React.FC<Props> = props => {
   const { address } = useAccount();
   const isMounted = useIsMounted();
@@ -69,4 +69,3 @@ function GetBalances({ address, token }: { address: string; token: string }) {
 
 const ETHIcon = "https://tokens-data.1inch.io/images/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png";
 const WETHIcon = "https://tokens-data.1inch.io/images/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png";
-const NUMBER_REGEX = /^\.?\d+\.?\d*$/;
