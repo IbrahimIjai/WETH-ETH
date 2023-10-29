@@ -50,9 +50,9 @@ const SwapInputBox: React.FC<Props> = ({ isInput, token, value, setValue }) => {
           disabled={!isInput}
         />
       </div>
-      <div className="text-[13px] font-[485] text-[#9b9b9b] flex items-center gap-2">
+      {address && <div className="text-[13px] font-[485] text-[#9b9b9b] flex items-center gap-2">
         <span>Balance:</span> <GetBalances address={account} token={token} />
-      </div>
+      </div>}
     </div>
   );
 };
