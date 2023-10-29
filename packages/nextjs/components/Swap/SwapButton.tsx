@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NUMBER_REGEX } from "./utils";
-import type { balancesType, currencies } from "./utils";
+import type { currencies } from "./utils";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { hardhat } from "viem/chains";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";

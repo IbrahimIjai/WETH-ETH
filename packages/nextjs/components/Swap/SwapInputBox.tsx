@@ -25,7 +25,7 @@ const SwapInputBox: React.FC<Props> = ({ isInput, token, value, setValue }) => {
   const account = isMounted && address ? address : "";
   const ticker = token === "NATIVE" ? "ETH" : "WETH";
   const icon = token === "NATIVE" ? ETHIcon : WETHIcon;
-  const isNative = token === "NATIVE";
+  // const isNative = token === "NATIVE";
   // console.log("this is ticker", isNative, token);
 
   return (
