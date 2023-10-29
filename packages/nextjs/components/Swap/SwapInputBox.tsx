@@ -70,7 +70,7 @@ function GetBalances({ address, token }: { address: string; token: string }) {
   if (token === "WETH9") {
     if (isLoadingWeth) return <span className="inline-flex w-8 h-4 rounded-sm animate-pulse bg-primary/40" />;
     if (isErrorWeth) return <span>Error</span>;
-    return <span>{data && (Number(data) / 1e18).toFixed(6)}</span>;
+    return <span> {data !== undefined ? (Number(data) / 1e18).toFixed(6) : "Data is undefined or not available"}</span>;
   } else {
     if (isLoading) return <span className="inline-flex w-8 h-4 rounded-sm animate-pulse bg-primary/40" />;
     if (isError) return <span>Error</span>;
