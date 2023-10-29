@@ -79,7 +79,6 @@ const Swap = () => {
         />
       </div>
       <SwapInputBox
-        // token={action === "Unwrap" ? "Ether" : "Wrapped Ether"}
         token={outPutCur}
         value={outPutCurValue}
         setValue={setValue}
@@ -90,7 +89,7 @@ const Swap = () => {
       <SwapButton
         inputCur={inputCur}
         action={action}
-        value={Number(value)}
+        value={value}
         swap={action === "Wrap" ? depositETH : withdrawETH}
         isLoading={action === "Wrap" ? isLoading : isLoadingWeth}
         isBalanceLoading={balanceLoading}

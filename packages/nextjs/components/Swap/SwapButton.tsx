@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NUMBER_REGEX } from "./utils";
 import type { currencies } from "./utils";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { hardhat } from "viem/chains";
+import { scroll } from "viem/chains";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline";
 
@@ -10,7 +10,7 @@ type SwapButtonProps = {
   action: "Wrap" | "Unwrap";
   swap: () => void;
   isLoading: boolean;
-  value: number;
+  value: string;
   inputCur?: currencies;
   wethBalance: number | null;
   ethBalance: number | null;
@@ -36,7 +36,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({
   // console.log("this is currency type Input", inputCur);
   useEffect(() => {
     if (inputCur === "NATIVE" && ethBalance !== null) {
-      if (value > ethBalance) {
+      if (Number(value) > ethBalance) {
         console.log("INSUFFICIENT FUNDS");
         setInSufficientFunds(true);
         console.log(inSufficientFunds);
@@ -44,7 +44,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({
         setInSufficientFunds(false);
       }
     } else if (inputCur === "WETH9" && wethBalance !== null) {
-      if (value > wethBalance) {
+      if (Number(value) > wethBalance) {
         console.log("INSUFFICIENT FUNDS");
         setInSufficientFunds(true);
         console.log(inSufficientFunds);
@@ -56,11 +56,11 @@ const SwapButton: React.FC<SwapButtonProps> = ({
 
   return (
     <>
-      {isConnected && connectedChain && connectedChain.id === hardhat.id ? (
+      {isConnected && connectedChain ? (
         <button
           className="w-full py-2 text-center rounded-lg cursor-pointer btn btn-secondary"
           onClick={() => swap()}
-          disabled={isLoading || !NUMBER_REGEX.test(value?.toString()) || inSufficientFunds}
+          disabled={isLoading || !NUMBER_REGEX.test(value) || inSufficientFunds || value==""}
         >
           {isLoading ? (
             <span className="loading loading-spinner loading-sm"></span>
@@ -70,11 +70,11 @@ const SwapButton: React.FC<SwapButtonProps> = ({
             <span>{inSufficientFunds ? "Insufficient Balance" : action}</span>
           )}
         </button>
-      ) : connectedChain ? (
+      ) : connectedChain && connectedChain?.id !== scroll.id ? (
         <button
           className="flex items-center justify-center w-full gap-2 py-2 text-center rounded-lg btn btn-secondary"
           type="button"
-          onClick={() => switchNetwork?.(hardhat.id)}
+          onClick={() => switchNetwork?.(scroll.id)}
         >
           <ArrowsRightLeftIcon className="w-4 h-6 ml-2 sm:ml-0" />
           <span className="whitespace-nowrap">Switch to Scroll</span>
