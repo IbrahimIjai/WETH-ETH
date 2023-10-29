@@ -5,6 +5,7 @@ type InputBaseProps<T> = CommonInputProps<T> & {
   error?: boolean;
   prefix?: ReactNode;
   suffix?: ReactNode;
+  darkText?: boolean;
 };
 
 export const InputBase = <T extends { toString: () => string } | undefined = string>({
@@ -16,6 +17,7 @@ export const InputBase = <T extends { toString: () => string } | undefined = str
   disabled,
   prefix,
   suffix,
+  darkText,
 }: InputBaseProps<T>) => {
   let modifier = "";
   if (error) {
@@ -35,7 +37,9 @@ export const InputBase = <T extends { toString: () => string } | undefined = str
     <div className={`w-full ${modifier}`}>
       {prefix}
       <input
-        className="input input-ghost outline-none bg-transparent focus:outline-none text-end h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-white text-[30px] disabled:text-white disabled:bg-transparent disabled:border-transparent"
+        className={`${
+          darkText ? "text-gray-500 disabled:text-gray-500" : "text-white"
+        }  input input-ghost outline-none bg-transparent focus:outline-none text-end h-[2.2rem] min-h-[2.2rem] disabled:text-white px-4 border w-full font-medium placeholder:text-accent/50  text-[30px]  disabled:bg-transparent disabled:border-transparent`}
         placeholder={placeholder}
         name={name}
         value={value?.toString()}

@@ -1,48 +1,58 @@
 import React from "react";
 import Image from "next/image";
-import { NUMBER_REGEX } from ".";
 import { InputBase } from "../scaffold-eth";
+import { NUMBER_REGEX } from "./utils";
+import type { currencies } from "./utils";
+import { useDarkMode } from "usehooks-ts";
 import { useAccount } from "wagmi";
 import useIsMounted from "~~/hooks/isMounted";
 import { useAccountBalance, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 
 interface Props {
-  isTop: boolean;
-  token: "Wrapped Ether" | "Ether";
+  // isTop: boolean;
+  isInput?: boolean;
+  // token: "Wrapped Ether" | "Ether";
+  token: currencies;
   value: string;
   setValue: (value: string) => void;
 }
 
-const SwapInputBox: React.FC<Props> = props => {
+const SwapInputBox: React.FC<Props> = ({ isInput, token, value, setValue }) => {
   const { address } = useAccount();
   const isMounted = useIsMounted();
+  const { isDarkMode } = useDarkMode();
+  // console.log("this is darkmood", isDarkMode, !isDarkMode && !isInput);
   const account = isMounted && address ? address : "";
-  const { isTop, token, value, setValue } = props;
-  const ticker = token === "Ether" ? "ETH" : "WETH";
-  const icon = token === "Ether" ? ETHIcon : WETHIcon;
+  const ticker = token === "NATIVE" ? "ETH" : "WETH";
+  const icon = token === "NATIVE" ? ETHIcon : WETHIcon;
+  const isNative = token === "NATIVE";
+  // console.log("this is ticker", isNative, token);
 
   return (
     <div
-      className="px-4 py-3 w-full box-shadow-custom rounded-2xl border-2 border-gray-200 dark:border-gray-700"
-      style={{ background: isTop ? "#000" : "" }}
+      className={`${
+        isInput ? "bg-primary" : ""
+      } w-full px-4 py-3 border-[1px] border-gray-400 box-shadow-custom rounded-2xl dark:border-gray-700 `}
+      // style={{ background: isInput ? "#000" : "" }}
     >
-      <p className="text-[13px] font-[485] text-[#9b9b9b]">{token}</p>
-      <div className="my-2 w-full flex gap-4">
+      <p className="text-[13px] font-[485] ">{ticker}</p>
+      <div className="flex w-full gap-4 my-2">
         <div className="flex items-center justify-center gap-1">
           <Image src={icon} width={24} height={24} alt={`${ticker} Icon`} style={{ height: "24px", width: "24px" }} />
           <span>{ticker}</span>
         </div>
         <InputBase
-          placeholder="0"
-          value={value}
+          // placeholder={value ? value : "0"}
+          darkText={!isDarkMode && !isInput}
+          value={value ? value : "0"}
           onChange={value => setValue(value)}
           error={Boolean(value) && !NUMBER_REGEX.test(value)}
-          disabled={!isTop}
+          disabled={!isInput}
         />
       </div>
-      <p className="text-[13px] font-[485] text-[#9b9b9b]">
-        Balance: <GetBalances address={account} token={token} />
-      </p>
+      <div className="text-[13px] font-[485] text-[#9b9b9b] flex items-center gap-2">
+        <span>Balance:</span> <GetBalances address={account} token={token} />
+      </div>
     </div>
   );
 };
@@ -56,14 +66,15 @@ function GetBalances({ address, token }: { address: string; token: string }) {
     isError: isErrorWeth,
     isLoading: isLoadingWeth,
   } = useScaffoldContractRead({ contractName: "WETH9", functionName: "balanceOf", args: [address] });
-  if (token === "Wrapped Ether") {
-    if (isLoadingWeth) return <span>Loading...</span>;
+  // console.log("WETH BALLANCE",  Number(data)/1e18.toFixed(3));
+  if (token === "WETH9") {
+    if (isLoadingWeth) return <span className="inline-flex w-8 h-4 rounded-sm animate-pulse bg-primary/40" />;
     if (isErrorWeth) return <span>Error</span>;
-    return <span>{data?.toString()}</span>;
+    return <span>{data && (Number(data) / 1e18).toFixed(6)}</span>;
   } else {
-    if (isLoading) return <span>Loading...</span>;
+    if (isLoading) return <span className="inline-flex w-8 h-4 rounded-sm animate-pulse bg-primary/40" />;
     if (isError) return <span>Error</span>;
-    return <span>{balance}</span>;
+    return <span>{balance?.toFixed(6)}</span>;
   }
 }
 
