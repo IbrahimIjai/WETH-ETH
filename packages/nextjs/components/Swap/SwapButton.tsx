@@ -1,58 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { GetBalances } from "./SwapInputBox";
 import { NUMBER_REGEX } from "./utils";
-import type { currencies } from "./utils";
+import type { actionType } from "./utils";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { scroll } from "viem/chains";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline";
 
 type SwapButtonProps = {
-  action: "Wrap" | "Unwrap";
+  action: actionType;
   swap: () => void;
   isLoading: boolean;
   value: string;
-  inputCur?: currencies;
-  wethBalance: number | null;
-  ethBalance: number | null;
-  isBalanceLoading?: boolean;
-  isBalanceFetchingError?: boolean;
 };
 
-const SwapButton: React.FC<SwapButtonProps> = ({
-  action,
-  swap,
-  isLoading,
-  value,
-  inputCur,
-  ethBalance,
-  wethBalance,
-}) => {
+const SwapButton: React.FC<SwapButtonProps> = ({ action, swap, isLoading, value }) => {
   const { isConnected, isConnecting } = useAccount();
   const { chain: connectedChain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const { openConnectModal } = useConnectModal();
-  const [inSufficientFunds, setInSufficientFunds] = useState(false);
-
-  // console.log("this is currency type Input", inputCur);
-  useEffect(() => {
-    if (inputCur === "NATIVE" && ethBalance !== null) {
-      if (Number(value) > ethBalance) {
-        console.log("INSUFFICIENT FUNDS");
-        setInSufficientFunds(true);
-        console.log(inSufficientFunds);
-      } else {
-        setInSufficientFunds(false);
-      }
-    } else if (inputCur === "WETH9" && wethBalance !== null) {
-      if (Number(value) > wethBalance) {
-        console.log("INSUFFICIENT FUNDS");
-        setInSufficientFunds(true);
-        console.log(inSufficientFunds);
-      } else {
-        setInSufficientFunds(false);
-      }
-    }
-  }, [value, inputCur, ethBalance, wethBalance]);
+  const { data: Balances } = GetBalances({ token: "All" });
+  const inSufficientFunds =
+    action === "Wrap" ? Balances.ethBalance < Number(value) : Balances.wethBalance < Number(value);
 
   return (
     <>
@@ -60,7 +29,7 @@ const SwapButton: React.FC<SwapButtonProps> = ({
         <button
           className="w-full py-2 text-center rounded-lg cursor-pointer btn btn-secondary"
           onClick={() => swap()}
-          disabled={isLoading || !NUMBER_REGEX.test(value) || inSufficientFunds || value==""}
+          disabled={isLoading || !NUMBER_REGEX.test(value) || inSufficientFunds || value === ""}
         >
           {isLoading ? (
             <span className="loading loading-spinner loading-sm"></span>
